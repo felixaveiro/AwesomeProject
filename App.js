@@ -1,64 +1,63 @@
-import React, { useState } from 'react';
-import { StatusBar, Alert } from 'react-native'; // Import Alert from react-native
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const App = () => {
-  const [name, setName] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+const Stack = createStackNavigator();
 
+function ScreenA({ navigation }) {
   const onPressHandler = () => {
-    if (name.length > 3) {
-      setSubmitted(!submitted);
-    } else {
-      Alert.alert('Warning', 'Name should be more than 3 characters', [ // Use Alert.alert instead of Alert
-        { text: 'OK' }
-      ]);
-    }
-  }
+    navigation.navigate('ScreenB');
+  };
 
   return (
     <View style={styles.body}>
-      <Text style={styles.text}>Please write your name:</Text>
-      <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-        placeholder="Enter your name"
-        // onChange={(value) => setName(value)} // Remove this line, as it's not needed
-        editable={!submitted}
-      />
-      <Button
-        title={submitted ? 'Clear' : 'Submit'}
-        onPress={onPressHandler}
-        disabled={submitted}
-      />
-      {submitted && <Text style={styles.text}>You are registered as: {name}</Text>}
-      <StatusBar style="auto" />
+      <Text style={styles.text}>Screen A</Text>
+      
+      <Pressable onPress={onPressHandler} style={({ pressed }) => ({ backgroundColor: pressed ? 'blue' : 'grey' })}>
+        <Text style={styles.text}>Go to Screen B</Text>
+      </Pressable>
     </View>
+  );
+}
+
+function ScreenB({ navigation }) {
+  const onPressHandler = () => {
+    navigation.goBack();
+  };
+  
+  return (
+    <View style={styles.body}>
+      <Text style={styles.text}>Screen B</Text>
+      <Pressable onPress={onPressHandler} style={({ pressed }) => ({ backgroundColor: pressed ? 'blue' : 'grey' })}>
+        <Text style={styles.text}>Go back to Screen A</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="ScreenA" component={ScreenA} />
+        <Stack.Screen name="ScreenB" component={ScreenB} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
   body: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
-    fontSize: 20,
-    color: '#000',
-    textAlign: 'center',
+    fontSize: 40,
+    fontWeight: 'bold',
+    margin: 10,
   },
-  input: {
-    height: 40,
-    width: '80%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 10,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  }
 });
 
 export default App;
